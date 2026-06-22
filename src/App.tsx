@@ -127,7 +127,7 @@ export default function App() {
   }
 
   function clearCompleted() {
-    setTodos((currentTodos) => currentTodos.filter((todo) => !todo.completed))
+    setTodos((currentTodo) => currentTodos.filter((todo) => !todo.completed))
   }
 
   function markAllCompleted() {
