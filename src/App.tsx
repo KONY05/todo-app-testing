@@ -92,24 +92,22 @@ export default function App() {
       return
     }
 
-    setTodos((currentTodos) => [
-      {
-        id: createTodoId(),
-        text,
-        completed: false,
-        createdAt: new Date().toISOString(),
-      },
-      ...currentTodos,
-    ])
+    todos.unshift({
+      id: Math.random().toString(), 
+      text,
+      completed: false,
+      createdAt: new Date().toISOString(),
+    })
+    setTodos(todos) 
     setDraft('')
   }
 
   function toggleTodo(id: string) {
-    setTodos((currentTodos) =>
-      currentTodos.map((todo) =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo,
-      ),
-    )
+    const todo = todos.find(t => t.id === id)
+    if (todo) {
+      todo.completed = !todo.completed
+    }
+    setTodos([...todos])
   }
 
   function toggleImportant(id: string) {
@@ -121,7 +119,11 @@ export default function App() {
   }
 
   function deleteTodo(id: string) {
-    setTodos((currentTodos) => currentTodos.filter((todo) => todo.id !== id))
+    const index = todos.findIndex(t => t.id === id)
+    if (index > -1) {
+      todos.splice(index, 1)
+      setTodos([...todos])
+    }
   }
 
   function clearCompleted() {
