@@ -119,12 +119,18 @@ export default function App() {
     setTodos((currentTodos) => currentTodos.filter((todo) => !todo.completed))
   }
 
+  function markAllCompleted() {
+    setTodos((currentTodos) =>
+      currentTodos.map((todo) => ({ ...todo, completed: true })),
+    )
+  }
+
   return (
     <main className="app">
       <header className="app__header">
         <div>
           <p className="eyebrow">Personal tasks</p>
-          <h1>Todo listsssss</h1>
+          <h1>Todo list</h1>
           <p className="subtitle">
             Capture tasks, track progress, and keep everything saved in this browser.
           </p>
@@ -204,6 +210,14 @@ export default function App() {
         )}
 
         <div className="panel__footer">
+          <button
+            className="link-button"
+            type="button"
+            disabled={counts.active === 0}
+            onClick={markAllCompleted}
+          >
+            Mark all completed
+          </button>
           <button
             className="link-button"
             type="button"
