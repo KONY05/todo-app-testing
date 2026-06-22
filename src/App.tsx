@@ -9,6 +9,7 @@ type Todo = {
   text: string
   completed: boolean
   createdAt: string
+  important?: boolean
 }
 
 const STORAGE_KEY = 'vite-react-todos'
@@ -111,6 +112,14 @@ export default function App() {
     )
   }
 
+  function toggleImportant(id: string) {
+    setTodos((currentTodos) =>
+      currentTodos.map((todo) =>
+        todo.id === id ? { ...todo, important: !todo.important } : todo,
+      ),
+    )
+  }
+
   function deleteTodo(id: string) {
     setTodos((currentTodos) => currentTodos.filter((todo) => todo.id !== id))
   }
@@ -182,7 +191,7 @@ export default function App() {
         {visibleTodos.length > 0 ? (
           <ul className="todo-list" aria-label="Tasks">
             {visibleTodos.map((todo) => (
-              <li className={`todo-item${todo.completed ? ' is-completed' : ''}`} key={todo.id}>
+              <li className={`todo-item${todo.completed ? ' is-completed' : ''}${todo.important ? ' is-important' : ''}`} key={todo.id}>
                 <button
                   className="checkbox"
                   type="button"
@@ -191,6 +200,14 @@ export default function App() {
                   onClick={() => toggleTodo(todo.id)}
                 />
                 <span className="todo-text">{todo.text}</span>
+                <button
+                  className={`important-button${todo.important ? ' is-important' : ''}`}
+                  type="button"
+                  aria-label={`Mark "${todo.text}" as ${todo.important ? 'not important' : 'important'}`}
+                  onClick={() => toggleImportant(todo.id)}
+                >
+                  {todo.important ? '★' : '☆'}
+                </button>
                 <button
                   className="delete-button"
                   type="button"
