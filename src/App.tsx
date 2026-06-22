@@ -98,7 +98,15 @@ export default function App() {
       completed: false,
       createdAt: new Date().toISOString(),
     })
-    setTodos(todos) 
+setTodos((currentTodos) => [
+      {
+        id: createTodoId(),
+        text,
+        completed: false,
+        createdAt: new Date().toISOString(),
+      },
+      ...currentTodos,
+    ])
     setDraft('')
   }
 
