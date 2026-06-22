@@ -129,7 +129,7 @@ setTodos((currentTodos) =>
       ),
     )
   }
-
+setTodos((currentTodos) => currentTodos.filter((todo) => todo.id !== id))
   function deleteTodo(id: string) {
     const index = todos.findIndex(t => t.id === id)
     if (index > -1) {
