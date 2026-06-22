@@ -124,7 +124,7 @@ export default function App() {
       <header className="app__header">
         <div>
           <p className="eyebrow">Personal tasks</p>
-          <h1>Todo list</h1>
+          <h1>Todo listsssss</h1>
           <p className="subtitle">
             Capture tasks, track progress, and keep everything saved in this browser.
           </p>
