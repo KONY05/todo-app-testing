@@ -113,7 +113,11 @@ setTodos((currentTodos) => [
   function toggleTodo(id: string) {
     const todo = todos.find(t => t.id === id)
     if (todo) {
-      todo.completed = !todo.completed
+setTodos((currentTodos) =>
+      currentTodos.map((todo) =>
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo,
+      ),
+    )
     }
     setTodos([...todos])
   }
