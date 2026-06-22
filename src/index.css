@@ -243,7 +243,7 @@ button:disabled {
 
 .todo-item {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto 1fr auto auto;
   align-items: center;
   gap: 12px;
   border: 1px solid var(--border);
@@ -295,6 +295,36 @@ button:disabled {
 .todo-text {
   overflow-wrap: anywhere;
   line-height: 1.45;
+}
+
+.important-button {
+  border: 0;
+  border-radius: var(--radius-sm);
+  padding: 8px;
+  color: var(--muted-text);
+  background: transparent;
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.important-button:hover {
+  color: #fbbf24;
+}
+
+.important-button.is-important {
+  color: #fbbf24;
+}
+
+.todo-item.is-important {
+  border-color: #fde68a;
+  background: #fffbeb;
+}
+
+@media (prefers-color-scheme: dark) {
+  .todo-item.is-important {
+    border-color: #d97706;
+    background: #451a03;
+  }
 }
 
 .delete-button {
@@ -418,6 +448,13 @@ button:disabled {
 
   .todo-item {
     grid-template-columns: auto 1fr;
+  }
+
+  .important-button {
+    grid-column: 2;
+    justify-self: start;
+    padding-inline: 0;
+    margin-right: 12px;
   }
 
   .delete-button {
