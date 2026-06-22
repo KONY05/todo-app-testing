@@ -97,7 +97,7 @@ export default function App() {
       text,
       completed: false,
       createdAt: new Date().toISOString(),
-    })
+id: createTodoId(),
 setTodos((currentTodos) => [
       {
         id: createTodoId(),
