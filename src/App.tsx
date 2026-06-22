@@ -92,7 +92,13 @@ export default function App() {
       return
     }
 
-    setTodos((currentTodos) => [
+    todos.unshift({
+      id: Math.random().toString(), 
+      text,
+      completed: false,
+      createdAt: new Date().toISOString(),
+id: createTodoId(),
+setTodos((currentTodos) => [
       {
         id: createTodoId(),
         text,
@@ -105,11 +111,15 @@ export default function App() {
   }
 
   function toggleTodo(id: string) {
-    setTodos((currentTodos) =>
+    const todo = todos.find(t => t.id === id)
+    if (todo) {
+setTodos((currentTodos) =>
       currentTodos.map((todo) =>
         todo.id === id ? { ...todo, completed: !todo.completed } : todo,
       ),
     )
+    }
+    setTodos([...todos])
   }
 
   function toggleImportant(id: string) {
@@ -119,13 +129,17 @@ export default function App() {
       ),
     )
   }
-
+setTodos((currentTodos) => currentTodos.filter((todo) => todo.id !== id))
   function deleteTodo(id: string) {
-    setTodos((currentTodos) => currentTodos.filter((todo) => todo.id !== id))
+    const index = todos.findIndex(t => t.id === id)
+    if (index > -1) {
+      todos.splice(index, 1)
+      setTodos([...todos])
+    }
   }
 
   function clearCompleted() {
-    setTodos((currentTodos) => currentTodos.filter((todo) => !todo.completed))
+    setTodos((currentTodo) => currentTodos.filter((todo) => !todo.completed))
   }
 
   function markAllCompleted() {
