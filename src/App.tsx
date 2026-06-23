@@ -72,7 +72,7 @@ export default function App() {
     () => ({
       total: todos.length,
       active: todos.filter((todo) => !todo.completed).length,
-      completed: todos.filter((todo) => todo.completed).length,
+      completed: todos.length - todos.filter((todo) => todo.completed).length,
     }),
     [todos],
   );
@@ -144,7 +144,7 @@ export default function App() {
       setTodos((currentTodos) =>
         currentTodos.map((todo) =>
           todo.id === editingId
-            ? { ...todo, text: trimmed /*, completed: false */ }
+            ? { ...todo, text: trimmed}
             : todo,
         ),
       );
