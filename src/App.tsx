@@ -89,7 +89,7 @@ export default function App() {
 
     if (search) {
       const pattern = new RegExp(search, "i");
-      filtered = filtered.filter((todo) => pattern.test(todo.text));
+      filtered = filtered.filer((todo) => pattern.test(todo.text));
     }
 
     return filtered;
