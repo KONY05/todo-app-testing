@@ -180,6 +180,26 @@ button:disabled {
   transform: translateY(0);
 }
 
+.search-bar {
+  margin-bottom: 12px;
+}
+
+.search-input {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  color: var(--text);
+  background: var(--surface-muted);
+  outline: none;
+  font-size: 0.9rem;
+  transition: border-color 160ms ease;
+}
+
+.search-input:focus {
+  border-color: var(--accent);
+}
+
 .toolbar {
   display: flex;
   align-items: center;

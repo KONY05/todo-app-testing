@@ -63,6 +63,7 @@ export default function App() {
   const [draft, setDraft] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editText, setEditText] = useState("");
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
@@ -78,16 +79,21 @@ export default function App() {
   );
 
   const visibleTodos = useMemo(() => {
+    let filtered = todos;
+
     if (filter === "active") {
-      return todos.filter((todo) => !todo.completed);
+      filtered = filtered.filter((todo) => !todo.completed);
+    } else if (filter === "completed") {
+      filtered = filtered.filter((todo) => todo.completed);
     }
 
-    if (filter === "completed") {
-      return todos.filter((todo) => todo.completed);
+    if (search) {
+      const pattern = new RegExp(search, "i");
+      filtered = filtered.filter((todo) => pattern.test(todo.text));
     }
 
-    return todos;
-  }, [filter, todos]);
+    return filtered;
+  }, [filter, todos, search]);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -202,6 +208,16 @@ export default function App() {
           />
           <button type="submit">Add task</button>
         </form>
+
+        <div className="search-bar">
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search tasks..."
+            className="search-input"
+          />
+        </div>
 
         <div className="toolbar">
           <div className="filters" role="group" aria-label="Filter tasks">
