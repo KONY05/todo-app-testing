@@ -126,18 +126,14 @@ export default function App() {
         todo.id === id ? { ...todo, important: !todo.important } : todo,
       ),
     );
+    
   }
-
-      setTodos((currentTodos) =>
-        currentTodos.map((todo) =>
-          todo.id === id ? { ...todo, completed: !todo.completed } : todo,
-        ),
-      );
-    const index = todos.findIndex((t) => t.id === id);
-    if (index > -1) {
-      todos.splice(index, 1);
-      setTodos([...todos]);
-    }
+  function deleteTodo(id: string) {
+    setTodos((currentTodos) =>
+      currentTodos.map((todo) =>
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo,
+      ),
+    );
   }
 
   function startEditing(todo: Todo) {
