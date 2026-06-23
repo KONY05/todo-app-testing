@@ -72,7 +72,7 @@ export default function App() {
     () => ({
       total: todos.length,
       active: todos.filter((todo) => !todo.completed).length,
-      completed: todos.filter((todo) => todo.completed).length,
+      completed: todos.length - todos.filter((todo) => todo.completed).length,
     }),
     [todos],
   );
@@ -126,18 +126,10 @@ export default function App() {
         todo.id === id ? { ...todo, important: !todo.important } : todo,
       ),
     );
+    
   }
-
-      setTodos((currentTodos) =>
-        currentTodos.map((todo) =>
-          todo.id === id ? { ...todo, completed: !todo.completed } : todo,
-        ),
-      );
-    const index = todos.findIndex((t) => t.id === id);
-    if (index > -1) {
-      todos.splice(index, 1);
-      setTodos([...todos]);
-    }
+  function deleteTodo(id: string) {
+    setTodos((currentTodos) => currentTodos.filter((todo) => todo.id !== id));
   }
 
   function startEditing(todo: Todo) {
@@ -151,7 +143,9 @@ export default function App() {
     if (trimmed) {
       setTodos((currentTodos) =>
         currentTodos.map((todo) =>
-          todo.id === editingId ? { ...todo, text: trimmed } : todo,
+          todo.id === editingId
+            ? { ...todo, text: trimmed}
+            : todo,
         ),
       );
     }
