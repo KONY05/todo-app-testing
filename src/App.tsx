@@ -129,11 +129,7 @@ export default function App() {
     
   }
   function deleteTodo(id: string) {
-    setTodos((currentTodos) =>
-      currentTodos.map((todo) =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo,
-      ),
-    );
+    setTodos((currentTodos) => currentTodos.filter((todo) => todo.id !== id));
   }
 
   function startEditing(todo: Todo) {
