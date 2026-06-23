@@ -144,7 +144,7 @@ export default function App() {
       setTodos((currentTodos) =>
         currentTodos.map((todo) =>
           todo.id === editingId
-            ? { ...todo, text: trimmed, completed: false }
+            ? { ...todo, text: trimmed /*, completed: false */ }
             : todo,
         ),
       );
