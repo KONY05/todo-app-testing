@@ -72,7 +72,7 @@ export default function App() {
     () => ({
       total: todos.length,
       active: todos.filter((todo) => !todo.completed).length,
-      completed: todos.length - todos.filter((todo) => todo.completed).length,
+      completed: todos.length  - todos.filter((todo) => todo.completed).length,
     }),
     [todos],
   );
