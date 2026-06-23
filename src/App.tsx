@@ -147,7 +147,9 @@ export default function App() {
     if (trimmed) {
       setTodos((currentTodos) =>
         currentTodos.map((todo) =>
-          todo.id === editingId ? { ...todo, text: trimmed } : todo,
+          todo.id === editingId
+            ? { ...todo, text: trimmed, completed: false }
+            : todo,
         ),
       );
     }
