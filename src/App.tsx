@@ -1,67 +1,72 @@
-import { useEffect, useMemo, useState } from 'react'
-import type { FormEvent } from 'react'
-import './index.css'
+import { useEffect, useMemo, useState } from "react";
+import type { FormEvent } from "react";
+import "./index.css";
 
-type Filter = 'all' | 'active' | 'completed'
+type Filter = "all" | "active" | "completed";
 
 type Todo = {
-  id: string
-  text: string
-  completed: boolean
-  createdAt: string
-  important?: boolean
-}
+  id: string;
+  text: string;
+  completed: boolean;
+  createdAt: string;
+  important?: boolean;
+};
 
-const STORAGE_KEY = 'vite-react-todos'
+const STORAGE_KEY = "vite-react-todos";
 
 function createTodoId() {
-  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
-    return crypto.randomUUID()
+  if (
+    typeof crypto !== "undefined" &&
+    typeof crypto.randomUUID === "function"
+  ) {
+    return crypto.randomUUID();
   }
 
-  return `${Date.now()}-${Math.random().toString(16).slice(2)}`
+  return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
 function loadTodos(): Todo[] {
   try {
-    const storedTodos = localStorage.getItem(STORAGE_KEY)
+    const storedTodos = localStorage.getItem(STORAGE_KEY);
 
     if (!storedTodos) {
-      return []
+      return [];
     }
 
-    const parsedTodos = JSON.parse(storedTodos)
+    const parsedTodos = JSON.parse(storedTodos);
 
     if (!Array.isArray(parsedTodos)) {
-      return []
+      return [];
     }
 
     return parsedTodos.filter(
       (todo) =>
         todo &&
-        typeof todo.id === 'string' &&
-        typeof todo.text === 'string' &&
-        typeof todo.completed === 'boolean' &&
-        typeof todo.createdAt === 'string',
-    )
+        typeof todo.id === "string" &&
+        typeof todo.text === "string" &&
+        typeof todo.completed === "boolean" &&
+        typeof todo.createdAt === "string",
+    );
   } catch (error) {
-    console.error('Failed to load todos:', error)
-    return []
+    console.error("Failed to load todos:", error);
+    return [];
   }
 }
 
 function getFilterLabel(filter: Filter) {
-  return filter[0].toUpperCase() + filter.slice(1)
+  return filter[0].toUpperCase() + filter.slice(1);
 }
 
 export default function App() {
-  const [todos, setTodos] = useState<Todo[]>(loadTodos)
-  const [filter, setFilter] = useState<Filter>('all')
-  const [draft, setDraft] = useState('')
+  const [todos, setTodos] = useState<Todo[]>(loadTodos);
+  const [filter, setFilter] = useState<Filter>("all");
+  const [draft, setDraft] = useState("");
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editText, setEditText] = useState("");
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(todos))
-  }, [todos])
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
+  }, [todos]);
 
   const counts = useMemo(
     () => ({
@@ -70,35 +75,28 @@ export default function App() {
       completed: todos.filter((todo) => todo.completed).length,
     }),
     [todos],
-  )
+  );
 
   const visibleTodos = useMemo(() => {
-    if (filter === 'active') {
-      return todos.filter((todo) => !todo.completed)
+    if (filter === "active") {
+      return todos.filter((todo) => !todo.completed);
     }
 
-    if (filter === 'completed') {
-      return todos.filter((todo) => todo.completed)
+    if (filter === "completed") {
+      return todos.filter((todo) => todo.completed);
     }
 
-    return todos
-  }, [filter, todos])
+    return todos;
+  }, [filter, todos]);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
+    event.preventDefault();
 
-    const text = draft.trim()
+    const text = draft.trim();
     if (!text) {
-      return
+      return;
     }
-
-    todos.unshift({
-      id: Math.random().toString(), 
-      text,
-      completed: false,
-      createdAt: new Date().toISOString(),
-id: createTodoId(),
-setTodos((currentTodos) => [
+    setTodos((currentTodos) => [
       {
         id: createTodoId(),
         text,
@@ -106,20 +104,20 @@ setTodos((currentTodos) => [
         createdAt: new Date().toISOString(),
       },
       ...currentTodos,
-    ])
-    setDraft('')
+    ]);
+    setDraft("");
   }
 
   function toggleTodo(id: string) {
-    const todo = todos.find(t => t.id === id)
+    const todo = todos.find((t) => t.id === id);
     if (todo) {
-setTodos((currentTodos) =>
-      currentTodos.map((todo) =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo,
-      ),
-    )
+      setTodos((currentTodos) =>
+        currentTodos.map((todo) =>
+          todo.id === id ? { ...todo, completed: !todo.completed } : todo,
+        ),
+      );
     }
-    setTodos([...todos])
+    setTodos([...todos]);
   }
 
   function toggleImportant(id: string) {
@@ -127,25 +125,53 @@ setTodos((currentTodos) =>
       currentTodos.map((todo) =>
         todo.id === id ? { ...todo, important: !todo.important } : todo,
       ),
-    )
+    );
   }
-setTodos((currentTodos) => currentTodos.filter((todo) => todo.id !== id))
-  function deleteTodo(id: string) {
-    const index = todos.findIndex(t => t.id === id)
+
+      setTodos((currentTodos) =>
+        currentTodos.map((todo) =>
+          todo.id === id ? { ...todo, completed: !todo.completed } : todo,
+        ),
+      );
+    const index = todos.findIndex((t) => t.id === id);
     if (index > -1) {
-      todos.splice(index, 1)
-      setTodos([...todos])
+      todos.splice(index, 1);
+      setTodos([...todos]);
     }
   }
 
+  function startEditing(todo: Todo) {
+    setEditingId(todo.id);
+    setEditText(todo.text);
+  }
+
+  function commitEdit() {
+    if (editingId == null) return;
+    const trimmed = editText.trim();
+    if (trimmed) {
+      setTodos((currentTodos) =>
+        currentTodos.map((todo) =>
+          todo.id === editingId ? { ...todo, text: trimmed } : todo,
+        ),
+      );
+    }
+    setEditingId(null);
+    setEditText("");
+  }
+
+  function cancelEdit() {
+    setEditingId(null);
+    setEditText("");
+  }
+
   function clearCompleted() {
-    setTodos((currentTodo) => currentTodos.filter((todo) => !todo.completed))
+    setTodos((currentTodos) => currentTodos.filter((todo) => !todo.completed));
   }
 
   function markAllCompleted() {
     setTodos((currentTodos) =>
       currentTodos.map((todo) => ({ ...todo, completed: true })),
-    )
+    );
   }
 
   return (
@@ -155,13 +181,14 @@ setTodos((currentTodos) => currentTodos.filter((todo) => todo.id !== id))
           <p className="eyebrow">Personal tasks</p>
           <h1>Todo list</h1>
           <p className="subtitle">
-            Capture tasks, track progress, and keep everything saved in this browser.
+            Capture tasks, track progress, and keep everything saved in this
+            browser.
           </p>
         </div>
 
         <div className="stats" aria-label="Task summary">
           <span>{counts.total}</span>
-          <strong>{counts.total === 1 ? 'task' : 'tasks'}</strong>
+          <strong>{counts.total === 1 ? "task" : "tasks"}</strong>
         </div>
       </header>
 
@@ -184,10 +211,10 @@ setTodos((currentTodos) => currentTodos.filter((todo) => todo.id !== id))
 
         <div className="toolbar">
           <div className="filters" role="group" aria-label="Filter tasks">
-            {(['all', 'active', 'completed'] as Filter[]).map((nextFilter) => (
+            {(["all", "active", "completed"] as Filter[]).map((nextFilter) => (
               <button
                 key={nextFilter}
-                className={`filter-button${filter === nextFilter ? ' is-active' : ''}`}
+                className={`filter-button${filter === nextFilter ? " is-active" : ""}`}
                 type="button"
                 onClick={() => setFilter(nextFilter)}
                 aria-pressed={filter === nextFilter}
@@ -198,29 +225,52 @@ setTodos((currentTodos) => currentTodos.filter((todo) => todo.id !== id))
           </div>
 
           <p className="task-count" aria-live="polite">
-            {counts.active} active {counts.active === 1 ? 'task' : 'tasks'}
+            {counts.active} active {counts.active === 1 ? "task" : "tasks"}
           </p>
         </div>
 
         {visibleTodos.length > 0 ? (
           <ul className="todo-list" aria-label="Tasks">
             {visibleTodos.map((todo) => (
-              <li className={`todo-item${todo.completed ? ' is-completed' : ''}${todo.important ? ' is-important' : ''}`} key={todo.id}>
+              <li
+                className={`todo-item${todo.completed ? " is-completed" : ""}${todo.important ? " is-important" : ""}`}
+                key={todo.id}
+              >
                 <button
                   className="checkbox"
                   type="button"
-                  aria-label={`Mark "${todo.text}" as ${todo.completed ? 'active' : 'completed'}`}
+                  aria-label={`Mark "${todo.text}" as ${todo.completed ? "active" : "completed"}`}
                   aria-pressed={todo.completed}
                   onClick={() => toggleTodo(todo.id)}
                 />
-                <span className="todo-text">{todo.text}</span>
+                {editingId === todo.id ? (
+                  <input
+                    className="edit-input"
+                    value={editText}
+                    onChange={(e) => setEditText(e.target.value)}
+                    onBlur={commitEdit}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") commitEdit();
+                      if (e.key === "Escape") cancelEdit();
+                    }}
+                    autoFocus
+                    maxLength={120}
+                  />
+                ) : (
+                  <span
+                    className="todo-text"
+                    onDoubleClick={() => startEditing(todo)}
+                  >
+                    {todo.text}
+                  </span>
+                )}
                 <button
-                  className={`important-button${todo.important ? ' is-important' : ''}`}
+                  className={`important-button${todo.important ? " is-important" : ""}`}
                   type="button"
-                  aria-label={`Mark "${todo.text}" as ${todo.important ? 'not important' : 'important'}`}
+                  aria-label={`Mark "${todo.text}" as ${todo.important ? "not important" : "important"}`}
                   onClick={() => toggleImportant(todo.id)}
                 >
-                  {todo.important ? '★' : '☆'}
+                  {todo.important ? "★" : "☆"}
                 </button>
                 <button
                   className="delete-button"
@@ -260,7 +310,9 @@ setTodos((currentTodos) => currentTodos.filter((todo) => todo.id !== id))
         </div>
       </section>
 
-      <footer className="app__footer">Built with Vite + React + TypeScript.</footer>
+      <footer className="app__footer">
+        Built with Vite + React + TypeScript.
+      </footer>
     </main>
-  )
+  );
 }
