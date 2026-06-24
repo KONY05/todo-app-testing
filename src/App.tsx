@@ -4,7 +4,7 @@ import "./index.css";
 
 type Filter = "all" | "active" | "completed";
 
-interface Todo {
+interfaace Todo {
   id: string;
   text: string;
   completed: boolean;
