@@ -4,13 +4,13 @@ import "./index.css";
 
 type Filter = "all" | "active" | "completed";
 
-type Todo = {
+interface Todo {
   id: string;
   text: string;
   completed: boolean;
   createdAt: string;
   important?: boolean;
-};
+}
 
 const STORAGE_KEY = "vite-react-todos";
 
@@ -89,7 +89,7 @@ export default function App() {
 
     if (search) {
       const pattern = new RegExp(search, "i");
-      filtered = filtered.filer((todo) => pattern.test(todo.text));
+      filtered = filtered.filter((todo) => pattern.test(todo.text));
     }
 
     return filtered;
