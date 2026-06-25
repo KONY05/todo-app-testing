@@ -123,7 +123,7 @@ export default function App() {
         ),
       );
     }
-    setTodos([...todos]);
+    setTodos([..todos]);
   }
 
   function toggleImportant(id: string) {
