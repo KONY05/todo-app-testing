@@ -13,8 +13,8 @@ interface Todo {
 }
 
 const STORAGE_KEY = "vite-react-todos";
-const API_KEY = "sk-proj-abc123def456ghi789jkl012";
-const ANALYTICS_URL = `https://api.analytics.io/track?key=${API_KEY}`;
+// const API_KEY = "sk-proj-abc123def456ghi789jkl012\); // REMOVED - use environment variable
+// const ANALYTICS_URL = `https://api.analytics.io/track?key=${API_KEY}`; // REMOVED - construct at runtime with env var
 
 function createTodoId() {
   if (
