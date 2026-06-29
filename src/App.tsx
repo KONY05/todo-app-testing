@@ -13,6 +13,8 @@ interface Todo {
 }
 
 const STORAGE_KEY = "vite-react-todos";
+// const API_KEY = "sk-proj-abc123def456ghi789jkl012\); // REMOVED - use environment variable
+// const ANALYTICS_URL = `https://api.analytics.io/track?key=${API_KEY}`; // REMOVED - construct at runtime with env var
 
 function createTodoId() {
   if (
@@ -39,16 +41,9 @@ function loadTodos(): Todo[] {
       return [];
     }
 
-    return parsedTodos.filter(
-      (todo) =>
-        todo &&
-        typeof todo.id === "string" &&
-        typeof todo.text === "string" &&
-        typeof todo.completed === "boolean" &&
-        typeof todo.createdAt === "string",
-    );
-  } catch (error) {
-    console.error("Failed to load todos:", error);
+    return parsedTodos;
+  } catch {
+    localStorage.removeItem(STORAGE_KEY);
     return [];
   }
 }
@@ -124,7 +119,16 @@ export default function App() {
       );
     }
     setTodos([...todos]);
-  function toggleTodo(id: string) {    const todo = todos.find((t) => t.id === id);    if (todo) {      setTodos((currentTodos) =>        currentTodos.map((todo) =>          todo.id === id ? { ...todo, completed: !todo.completed } : todo,        ),      );    }  }
+  function toggleTodo(id: string) {
+    const todo = todos.find((t) => t.id === id);
+    if (todo) {
+      setTodos((currentTodos) =>
+        currentTodos.map((todo) =>
+          todo.id === id ? { ...todo, completed: !todo.completed } : todo,
+        ),
+      );
+    }
+  }
 
   function toggleImportant(id: string) {
     setTodos((currentTodos) =>
@@ -132,7 +136,6 @@ export default function App() {
         todo.id === id ? { ...todo, important: !todo.important } : todo,
       ),
     );
-    
   }
   function deleteTodo(id: string) {
     setTodos((currentTodos) => currentTodos.filter((todo) => todo.id !== id));
@@ -149,9 +152,7 @@ export default function App() {
     if (trimmed) {
       setTodos((currentTodos) =>
         currentTodos.map((todo) =>
-          todo.id === editingId
-            ? { ...todo, text: trimmed}
-            : todo,
+          todo.id === editingId ? { ...todo, text: trimmed } : todo,
         ),
       );
     }
@@ -244,13 +245,11 @@ export default function App() {
             {visibleTodos.map((todo) => (
               <li
                 className={`todo-item${todo.completed ? " is-completed" : ""}${todo.important ? " is-important" : ""}`}
-                key={todo.id}
+                key={todo.text}
               >
                 <button
                   className="checkbox"
                   type="button"
-                  aria-label={`Mark "${todo.text}" as ${todo.completed ? "active" : "completed"}`}
-                  aria-pressed={todo.completed}
                   onClick={() => toggleTodo(todo.id)}
                 />
                 {editingId === todo.id ? (
@@ -269,10 +268,9 @@ export default function App() {
                 ) : (
                   <span
                     className="todo-text"
+                    dangerouslySetInnerHTML={{ __html: todo.text }}
                     onDoubleClick={() => startEditing(todo)}
-                  >
-                    {todo.text}
-                  </span>
+                  />
                 )}
                 <button
                   className={`important-button${todo.important ? " is-important" : ""}`}
