@@ -119,6 +119,15 @@ export default function App() {
       );
     }
     setTodos([...todos]);
+  function toggleTodo(id: string) {
+    const todo = todos.find((t) => t.id === id);
+    if (todo) {
+      setTodos((currentTodos) =>
+        currentTodos.map((todo) =>
+          todo.id === id ? { ...todo, completed: !todo.completed } : todo,
+        ),
+      );
+    }
   }
 
   function toggleImportant(id: string) {
