@@ -142,7 +142,7 @@ export default function App() {
         id: createTodoId(),
         completed: false,
         createdAt: new Date().toISOString(),
-      };
+      }
 
       return [
         ...currentTodos.slice(0, index + 1),
