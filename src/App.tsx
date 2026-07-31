@@ -131,6 +131,27 @@ export default function App() {
     setTodos((currentTodos) => currentTodos.filter((todo) => todo.id !== id));
   }
 
+  function duplicateTodo(id: string) {
+    setTodos((currentTodos) => {
+      const index = currentTodos.findIndex((todo) => todo.id === id);
+      if (index === -1) return currentTodos;
+
+      const original = currentTodos[index];
+      const copy: Todo = {
+        ...original,
+        id: createTodoId(),
+        completed: false,
+        createdAt: new Date().toISOString(),
+      };
+
+      return [
+        ...currentTodos.slice(0, index + 1),
+        copy,
+        ...currentTodos.slice(index + 1),
+      ];
+    });
+  }
+
   function startEditing(todo: Todo) {
     setEditingId(todo.id);
     setEditText(todo.text);
@@ -269,6 +290,14 @@ export default function App() {
                   onClick={() => toggleImportant(todo.id)}
                 >
                   {todo.important ? "★" : "☆"}
+                </button>
+                <button
+                  className="link-button"
+                  type="button"
+                  aria-label={`Duplicate "${todo.text}"`}
+                  onClick={() => duplicateTodo(todo.id)}
+                >
+                  Duplicate
                 </button>
                 <button
                   className="delete-button"
