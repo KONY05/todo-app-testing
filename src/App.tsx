@@ -10,6 +10,7 @@ interface Todo {
   completed: boolean;
   createdAt: string;
   important?: boolean;
+  dueDate?: string;
 }
 
 const STORAGE_KEY = "vite-react-todos";
@@ -52,6 +53,13 @@ function getFilterLabel(filter: Filter) {
   return filter[0].toUpperCase() + filter.slice(1);
 }
 
+function formatDueDate(dueDate: string) {
+  return new Date(dueDate).toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+  });
+}
+
 export default function App() {
   const [todos, setTodos] = useState<Todo[]>(loadTodos);
   const [filter, setFilter] = useState<Filter>("all");
@@ -59,6 +67,7 @@ export default function App() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editText, setEditText] = useState("");
   const [search, setSearch] = useState("");
+  const [draftDueDate, setDraftDueDate] = useState("");
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
@@ -103,10 +112,20 @@ export default function App() {
         text,
         completed: false,
         createdAt: new Date().toISOString(),
+        dueDate: draftDueDate || undefined,
       },
       ...currentTodos,
     ]);
     setDraft("");
+    setDraftDueDate("");
+  }
+
+  function setDueDate(id: string, dueDate: string) {
+    setTodos((currentTodos) =>
+      currentTodos.map((todo) =>
+        todo.id === id ? { ...todo, dueDate: dueDate || undefined } : todo,
+      ),
+    );
   }
 
   function toggleTodo(id: string) {
@@ -218,6 +237,16 @@ export default function App() {
             autoComplete="off"
             maxLength={120}
           />
+          <label className="sr-only" htmlFor="todo-due-date">
+            Due date
+          </label>
+          <input
+            id="todo-due-date"
+            className="due-date-input"
+            type="date"
+            value={draftDueDate}
+            onChange={(event) => setDraftDueDate(event.target.value)}
+          />
           <button type="submit">Add task</button>
         </form>
 
@@ -283,6 +312,18 @@ export default function App() {
                     onDoubleClick={() => startEditing(todo)}
                   />
                 )}
+                {todo.dueDate ? (
+                  <span className="due-date-badge">
+                    Due {formatDueDate(todo.dueDate)}
+                  </span>
+                ) : null}
+                <input
+                  className="due-date-input"
+                  type="date"
+                  value={todo.dueDate ?? ""}
+                  aria-label={`Due date for "${todo.text}"`}
+                  onChange={(event) => setDueDate(todo.id, event.target.value)}
+                />
                 <button
                   className={`important-button${todo.important ? " is-important" : ""}`}
                   type="button"
