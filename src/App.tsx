@@ -112,6 +112,7 @@ export default function App() {
       active: todos.filter((todo) => !todo.completed).length,
       completed: todos.filter((todo) => todo.completed).length,
       overdue: todos.filter(isOverdue).length,
+      dueToday: todos.filter(isDueToday).length,
     }),
     [todos],
   );
@@ -335,6 +336,7 @@ export default function App() {
           <p className="task-count" aria-live="polite">
             {counts.active} active {counts.active === 1 ? "task" : "tasks"}
             {counts.overdue > 0 ? ` · ${counts.overdue} overdue` : ""}
+            {counts.dueToday > 0 ? ` · ${counts.dueToday} due today` : ""}
           </p>
         </div>
 
