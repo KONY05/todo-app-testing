@@ -49,12 +49,12 @@ function loadTodos(): Todo[] {
   }
 }
 
-function getFilterLabel(filter: Filter) {
-  if (filter === "today") {
-    return "Due today";
-  }
+const FILTER_LABELS: Partial<Record<Filter, string>> = {
+  today: "Due today",
+};
 
-  return filter[0].toUpperCase() + filter.slice(1);
+function getFilterLabel(filter: Filter) {
+  return FILTER_LABELS[filter] ?? filter[0].toUpperCase() + filter.slice(1);
 }
 
 function formatDueDate(dueDate: string) {
