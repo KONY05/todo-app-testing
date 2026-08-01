@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import "./index.css";
 
-type Filter = "all" | "active" | "completed";
+type Filter = "all" | "active" | "completed" | "overdue" | "today";
 
 interface Todo {
   id: string;
@@ -50,6 +50,10 @@ function loadTodos(): Todo[] {
 }
 
 function getFilterLabel(filter: Filter) {
+  if (filter === "today") {
+    return "Due today";
+  }
+
   return filter[0].toUpperCase() + filter.slice(1);
 }
 
@@ -119,6 +123,10 @@ export default function App() {
       filtered = filtered.filter((todo) => !todo.completed);
     } else if (filter === "completed") {
       filtered = filtered.filter((todo) => todo.completed);
+    } else if (filter === "overdue") {
+      filtered = filtered.filter(isOverdue);
+    } else if (filter === "today") {
+      filtered = filtered.filter(isDueToday);
     }
 
     if (search) {
@@ -300,7 +308,9 @@ export default function App() {
 
         <div className="toolbar">
           <div className="filters" role="group" aria-label="Filter tasks">
-            {(["all", "active", "completed"] as Filter[]).map((nextFilter) => (
+            {(
+              ["all", "active", "completed", "overdue", "today"] as Filter[]
+            ).map((nextFilter) => (
               <button
                 key={nextFilter}
                 className={`filter-button${filter === nextFilter ? " is-active" : ""}`}
