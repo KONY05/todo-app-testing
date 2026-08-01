@@ -50,6 +50,7 @@ function loadTodos(): Todo[] {
 }
 
 const FILTER_LABELS: Partial<Record<Filter, string>> = {
+  overdue: "Overdue",
   today: "Due today",
 };
 
