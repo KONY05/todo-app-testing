@@ -115,6 +115,7 @@ export default function App() {
       completed: todos.filter((todo) => todo.completed).length,
       overdue: todos.filter(isOverdue).length,
       dueToday: todos.filter(isDueToday).length,
+      withDueDate: todos.filter((todo) => todo.dueDate).length,
     }),
     [todos],
   );
