@@ -60,6 +60,34 @@ function formatDueDate(dueDate: string) {
   });
 }
 
+function startOfToday() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return today;
+}
+
+function isOverdue(todo: Todo) {
+  if (!todo.dueDate || todo.completed) {
+    return false;
+  }
+
+  return new Date(todo.dueDate) < startOfToday();
+}
+
+function isDueToday(todo: Todo) {
+  if (!todo.dueDate || todo.completed) {
+    return false;
+  }
+
+  const due = new Date(todo.dueDate);
+  const today = startOfToday();
+  return (
+    due.getFullYear() === today.getFullYear() &&
+    due.getMonth() === today.getMonth() &&
+    due.getDate() === today.getDate()
+  );
+}
+
 export default function App() {
   const [todos, setTodos] = useState<Todo[]>(loadTodos);
   const [filter, setFilter] = useState<Filter>("all");
@@ -68,6 +96,7 @@ export default function App() {
   const [editText, setEditText] = useState("");
   const [search, setSearch] = useState("");
   const [draftDueDate, setDraftDueDate] = useState("");
+  const [sortByDueDate, setSortByDueDate] = useState(false);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
@@ -78,6 +107,7 @@ export default function App() {
       total: todos.length,
       active: todos.filter((todo) => !todo.completed).length,
       completed: todos.filter((todo) => todo.completed).length,
+      overdue: todos.filter(isOverdue).length,
     }),
     [todos],
   );
@@ -96,8 +126,16 @@ export default function App() {
       filtered = filtered.filter((todo) => pattern.test(todo.text));
     }
 
+    if (sortByDueDate) {
+      filtered = [...filtered].sort((a, b) => {
+        if (!a.dueDate) return 1;
+        if (!b.dueDate) return -1;
+        return a.dueDate.localeCompare(b.dueDate);
+      });
+    }
+
     return filtered;
-  }, [filter, todos, search]);
+  }, [filter, todos, search, sortByDueDate]);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -275,8 +313,18 @@ export default function App() {
             ))}
           </div>
 
+          <button
+            className={`filter-button${sortByDueDate ? " is-active" : ""}`}
+            type="button"
+            onClick={() => setSortByDueDate((current) => !current)}
+            aria-pressed={sortByDueDate}
+          >
+            Sort by due date
+          </button>
+
           <p className="task-count" aria-live="polite">
             {counts.active} active {counts.active === 1 ? "task" : "tasks"}
+            {counts.overdue > 0 ? ` · ${counts.overdue} overdue` : ""}
           </p>
         </div>
 
@@ -284,7 +332,7 @@ export default function App() {
           <ul className="todo-list" aria-label="Tasks">
             {visibleTodos.map((todo) => (
               <li
-                className={`todo-item${todo.completed ? " is-completed" : ""}${todo.important ? " is-important" : ""}`}
+                className={`todo-item${todo.completed ? " is-completed" : ""}${todo.important ? " is-important" : ""}${isOverdue(todo) ? " is-overdue" : ""}`}
                 key={todo.text}
               >
                 <button
@@ -313,8 +361,11 @@ export default function App() {
                   />
                 )}
                 {todo.dueDate ? (
-                  <span className="due-date-badge">
-                    Due {formatDueDate(todo.dueDate)}
+                  <span
+                    className={`due-date-badge${isOverdue(todo) ? " is-overdue" : ""}${isDueToday(todo) ? " is-due-today" : ""}`}
+                  >
+                    {isOverdue(todo) ? "Overdue " : "Due "}
+                    {formatDueDate(todo.dueDate)}
                   </span>
                 ) : null}
                 <input
