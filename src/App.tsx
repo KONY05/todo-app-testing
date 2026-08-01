@@ -111,6 +111,7 @@ export default function App() {
     () => ({
       total: todos.length,
       active: todos.filter((todo) => !todo.completed).length,
+      important: todos.filter((todo) => todo.important).length,
       completed: todos.filter((todo) => todo.completed).length,
       overdue: todos.filter(isOverdue).length,
       dueToday: todos.filter(isDueToday).length,
