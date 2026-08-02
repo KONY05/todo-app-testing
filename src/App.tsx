@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import "./index.css";
 
-type Filter = "all" | "active" | "completed";
+type Filter = "all" | "active" | "completed" | "overdue" | "today";
 
 interface Todo {
   id: string;
@@ -49,8 +49,13 @@ function loadTodos(): Todo[] {
   }
 }
 
+const FILTER_LABELS: Partial<Record<Filter, string>> = {
+  overdue: "Overdue",
+  today: "Due today",
+};
+
 function getFilterLabel(filter: Filter) {
-  return filter[0].toUpperCase() + filter.slice(1);
+  return FILTER_LABELS[filter] ?? filter[0].toUpperCase() + filter.slice(1);
 }
 
 function formatDueDate(dueDate: string) {
@@ -106,8 +111,14 @@ export default function App() {
     () => ({
       total: todos.length,
       active: todos.filter((todo) => !todo.completed).length,
+      important: todos.filter((todo) => todo.important).length,
       completed: todos.filter((todo) => todo.completed).length,
       overdue: todos.filter(isOverdue).length,
+      dueToday: todos.filter(isDueToday).length,
+      withDueDate: todos.filter((todo) => todo.dueDate).length,
+      untagged: todos.filter((todo) => !todo.important).length,
+      starred: todos.filter((todo) => todo.important).length,
+      plain: todos.filter((todo) => !todo.dueDate).length,
     }),
     [todos],
   );
@@ -119,6 +130,10 @@ export default function App() {
       filtered = filtered.filter((todo) => !todo.completed);
     } else if (filter === "completed") {
       filtered = filtered.filter((todo) => todo.completed);
+    } else if (filter === "overdue") {
+      filtered = filtered.filter(isOverdue);
+    } else if (filter === "today") {
+      filtered = filtered.filter(isDueToday);
     }
 
     if (search) {
@@ -300,7 +315,9 @@ export default function App() {
 
         <div className="toolbar">
           <div className="filters" role="group" aria-label="Filter tasks">
-            {(["all", "active", "completed"] as Filter[]).map((nextFilter) => (
+            {(
+              ["all", "active", "completed", "overdue", "today"] as Filter[]
+            ).map((nextFilter) => (
               <button
                 key={nextFilter}
                 className={`filter-button${filter === nextFilter ? " is-active" : ""}`}
@@ -325,6 +342,7 @@ export default function App() {
           <p className="task-count" aria-live="polite">
             {counts.active} active {counts.active === 1 ? "task" : "tasks"}
             {counts.overdue > 0 ? ` · ${counts.overdue} overdue` : ""}
+            {counts.dueToday > 0 ? ` · ${counts.dueToday} due today` : ""}
           </p>
         </div>
 
