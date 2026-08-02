@@ -118,6 +118,7 @@ export default function App() {
       withDueDate: todos.filter((todo) => todo.dueDate).length,
       untagged: todos.filter((todo) => !todo.important).length,
       starred: todos.filter((todo) => todo.important).length,
+      plain: todos.filter((todo) => !todo.dueDate).length,
     }),
     [todos],
   );
